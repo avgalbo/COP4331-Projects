@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Ubuntu", sans-serif;
+}
+
+html, body {
+  background: #2c2c2c;
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+#root > div {
+  flex: 1 0 auto;
+}
+
+.confirm-box.confirm-box {
+  color: white;
+  position: fixed;
+  background: black;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 300px;
+  left: calc(50% - 150px);
+}
+.confirm-box__actions > button {
+  border-radius: 50px;
+  background: #14cca4;
+  white-space: nowrap;
+  padding: 10px 22px;
+  margin: 8px;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+.confirm-box__actions > button:hover {
+  transition: all 0.2s ease-in-out;
+  background: #fff;
+  color: #14cca4;
+}
+.confirm-box__overlay.confirm-box__overlay {
+  background: rgba(0,0,0,0.7);
+}
+#stateAdd {
+  display: none;
+}
