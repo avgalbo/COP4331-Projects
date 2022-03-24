@@ -1,0 +1,957 @@
+openapi: 3.0.0
+info:
+  title: HospitalityPlatform API
+  version: 1.0.0
+  description: >-
+    The API documentation for HospitalityPlatform, a cross-platform customer
+    service and hotel management platform. <br><br>Please note that all API
+    documentation will be done with a local instance of Swagger, will use
+    OpenAPI 3.0.0, and [can be found on our
+    GitHub](https://github.com/COP4331-Group-19/HospitalityPlatform).
+  x-logo:
+    url: ''
+servers:
+  - url: https://hospitalityplatform.herokuapp.com/api
+    description: Production
+  - url: https://virtserver.swaggerhub.com/jeffreydivi/HospitalityPlatform/1.0.0
+    description: SwaggerHub API Auto Mocking
+paths:
+  /account/:
+    get:
+      tags:
+        - Account
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: 'Get current account information and settings.'
+          x-last-modified: 1625106621162
+      operationId: get_account_settings
+      summary: Get current account information and settings.
+    patch:
+      requestBody:
+        description: Edit the current account's settings.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditUser'
+        required: false
+      tags:
+        - Account
+      operationId: patch_account_settings
+      summary: Edit the current account's settings.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          x-last-modified: 1625107207680
+          description: Edit the current account's settings.
+          headers: {}
+          links: {}
+  /account/letmein/{phone}:
+    get:
+      parameters:
+        - name: phone
+          in: path
+          description: Phone number
+          required: true
+          schema:
+            type: string
+      security: []
+      tags:
+        - Account
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error200'
+          description: 'Reset a password, given a phone number.'
+      operationId: get_account_letmein_by_phone
+      summary: Reset a password, given a phone number.
+  /account/login/:
+    post:
+      security: []
+      summary: Create a session.
+      requestBody:
+        description: Account credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        required: true
+      tags:
+        - Account
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewJWT'
+          description: Return the currently logged-in user's account information.
+      operationId: post_account_login
+      description: Given a username and password, returns a JWT for the session.
+  /account/{account_id}:
+    delete:
+      tags:
+        - Admin
+      operationId: delete_account_by_account_id
+      summary: Deletes an account.
+      parameters:
+        - name: account_id
+          in: path
+          description: Account ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error200'
+          description: Returns a success message of the account's deletion.
+  /account/all/:
+    get:
+      tags:
+        - Admin
+      operationId: get_account_all
+      summary: List all accounts.
+      responses:
+        '200':
+          description: List all accounts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /account/search/:
+    post:
+      tags:
+        - Admin
+      operationId: get_account_search
+      summary: Search for all accounts by search query.
+      responses:
+        '200':
+          description: List all accounts that match search query.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - query
+              type: object
+              properties:
+                query:
+                  description: The name of the user to search for.
+                  type: string
+                  example: Jeffrey DiVi
+  #  /account/roles/:
+  #    summary: View and manage an account's role (guest/staff/admin).
+  #    post:
+  #      tags:
+  #        - Admin
+  #      operationId: post_account_roles
+  #      summary: Get the role of a user, given just a username.
+  #      requestBody:
+  #        required: true
+  #        content:
+  #          application/json:
+  #            schema:
+  #              $ref: '#/components/schemas/Role'
+  #      responses:
+  #        '200':
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Role'
+  #          description: 'Get the role of a user.'
+  #          headers: {}
+  #          links: {}
+  #    patch:
+  #      tags:
+  #        - Admin
+  #      operationId: patch_account_roles
+  #      summary: Set the role of a user.
+  #      requestBody:
+  #        required: true
+  #        content:
+  #          application/json:
+  #            schema:
+  #              $ref: '#/components/schemas/Role'
+  #      responses:
+  #        '200':
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/Role'
+  #          description: 'Set the role of a user.'
+  #          headers: {}
+  #          links: {}
+  /account/create/:
+    post:
+      tags:
+        - Admin
+      operationId: post_account_create
+      summary: Provision a new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserStub'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Provision a new user.
+  /hotel/:
+    get:
+      summary: Get the hotel's metadata.
+      tags:
+        - Admin
+      operationId: get_hotel
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hotel'
+          description: Returns the hotel's metadata.
+    patch:
+      tags:
+        - Admin
+      operationId: patch_hotel
+      summary: Edit the instance's metadata.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hotel'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hotel'
+          description: Returns the hotel's metadata.
+  /room/:
+    get:
+      tags:
+        - Guest
+      operationId: get_room
+      summary: Get current room information.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: Get current room information.
+  /room/{room_id}:
+    get:
+      tags:
+        - Admin
+      operationId: get_room_by_room_id
+      summary: Get room information by room number.
+      parameters:
+        - name: room_id
+          in: path
+          description: Room number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: Get room information by room number.
+    post:
+      tags:
+        - Admin
+      operationId: post_room_by_room_id
+      summary: Create a room with the given room number, if it does not yet exist.
+      parameters:
+        - name: room_id
+          in: path
+          description: Room number
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: Returns the new room's information.
+    patch:
+      tags:
+        - Admin
+      operationId: patch_room_by_room_id
+      summary: Edit a preexisting room.
+      parameters:
+        - name: room_id
+          in: path
+          description: Room number
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: Returns the updated room's information.
+    delete:
+      tags:
+        - Admin
+      operationId: delete_room_by_room_id
+      summary: Deletes a room.
+      parameters:
+        - name: room_id
+          in: path
+          description: Room number
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error200'
+          description: Returns a success message of the room's deletion.
+  /floor/{floor_number}:
+    get:
+      tags:
+        - Admin
+      operationId: get_floor_by_floor_number
+      summary: Get all rooms on a given floor.
+      parameters:
+        - name: floor_number
+          in: path
+          description: Floor number
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+          description: Returns all rooms on a given floor.
+  /floor/:
+    get:
+      tags:
+        - Admin
+      operationId: get_floor
+      summary: Get all rooms on all floors.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+          description: Returns all rooms on a all floors.
+  /inventory/:
+    get:
+      tags:
+        - Guest
+      operationId: get_inventory
+      summary: List all inventory items.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+          description: List all inventory items.
+    post:
+      tags:
+        - Admin
+      operationId: post_inventory
+      summary: Add an item to the inventory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditInventory'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+          description: Returns the new inventory item's information.
+
+  /inventory/{inventory_id}/{quantity}:
+    get:
+      tags:
+        - Guest
+      operationId: get_inventory_by_inventory_id_with_quantity
+      parameters:
+        - name: inventory_id
+          in: path
+          description: Inventory item's ID
+          required: true
+          schema:
+            type: integer
+        - name: quantity
+          in: path
+          description: Amount of items to order.
+          required: true
+          schema:
+            type: integer
+      summary: Orders an inventory item to a user's room.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: Orders an inventory item to a user's room.
+  /inventory/{inventory_id}:
+    get:
+      tags:
+        - Staff
+        - Guest
+      operationId: get_inventory_by_inventory_id
+      summary: Get information on a specific inventory entry.
+      parameters:
+        - name: inventory_id
+          in: path
+          description: Inventory item's ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+          description: Returns the requested inventory entry.
+    patch:
+      tags:
+        - Admin
+      operationId: patch_inventory_by_inventory_id
+      summary: Edit a preexisting inventory item.
+      parameters:
+        - name: inventory_id
+          in: path
+          description: Inventory item's ID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+          description: Returns the updated inventory entry's information.
+    delete:
+      tags:
+        - Admin
+      operationId: delete_inventory_by_inventory_id
+      summary: Deletes an inventory item.
+      parameters:
+        - name: inventory_id
+          in: path
+          description: Inventory item's ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error200'
+          description: Returns a success message of the inventory item's deletion.
+  /orders/unclaimed/:
+    get:
+      tags:
+        - Staff
+      operationId: get_orders_unclaimed
+      summary: Get a list of unclaimed orders.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: Returns all unclaimed orders.
+  /orders/my/:
+    get:
+      tags:
+        - Staff
+      operationId: get_orders_my
+      summary: Get a list of the logged-in user's claimed orders.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: Returns all active orders.
+  /orders/claim/{order_id}:
+    get:
+      tags:
+        - Staff
+      parameters:
+        - name: order_id
+          in: path
+          description: The order ID to claim.
+          required: true
+          schema:
+            type: integer
+      operationId: get_orders_claim_by_order_id
+      summary: Claim an order by its order ID.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: Returns the order claimed.
+  /orders/fulfill/{order_id}:
+    delete:
+      tags:
+        - Staff
+      parameters:
+        - name: order_id
+          in: path
+          description: The order ID to mark as fulfilled.
+          required: true
+          schema:
+            type: integer
+      operationId: get_orders_fulfill_by_order_id
+      summary: Fulfill an order by its order ID.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error200'
+          description: Returns the order fulfilled.
+components:
+  schemas:
+    Error404:
+      required:
+        - err_code
+        - description
+      type: object
+      properties:
+        err_code:
+          description: A numeric error code.
+          type: integer
+          example: 404
+        description:
+          description: A human-readable explanation of the error.
+          type: string
+          example: Asset not found.
+    Error403:
+      required:
+        - err_code
+        - description
+      type: object
+      properties:
+        err_code:
+          description: A numeric error code.
+          type: integer
+          example: 403
+        description:
+          description: A human-readable explanation of the error.
+          type: string
+          example: You do not have permission to view this asset.
+    Error401:
+      required:
+        - err_code
+        - description
+      type: object
+      properties:
+        err_code:
+          description: A numeric error code.
+          type: integer
+          example: 401
+        description:
+          description: A human-readable explanation of the error.
+          type: string
+          example: You are not logged in.
+    Error400:
+      required:
+        - err_code
+        - description
+      type: object
+      properties:
+        err_code:
+          description: A numeric error code.
+          type: integer
+          example: 400
+        description:
+          description: A human-readable explanation of the error.
+          type: string
+          example: Asset already exists.
+    Error200:
+      required:
+        - err_code
+        - description
+      type: object
+      properties:
+        err_code:
+          description: A numeric error code.
+          type: integer
+          example: 200
+        description:
+          description: A human-readable explanation of the error.
+          type: string
+          example: Success!
+    NewJWT:
+      required:
+        - token
+      type: object
+      allOf:
+        - properties:
+            token:
+              description: The Bearer token
+              type: string
+              example: Bearer V2UncmUgbm8gc3RyYW5nZXJzIHRvIGxvdmUuIFlvdSBub3cgdGhlIHJ1bGVzIGFuZCBzbyBkbyBJLg==
+            notice:
+              description: An optional notice if something with a user's credentials is insecure.
+              type: string
+              example: Please change your password immediately using PATCH /account/
+        - $ref: "#/components/schemas/User"
+
+    Credentials:
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          description: A username.
+          type: string
+          example: divi
+        password:
+          description: A password.
+          type: string
+          example: CorrectHorseBatteryStaple
+    Role:
+      required:
+        - username
+      type: object
+      properties:
+        username:
+          description: The username whom owns the role.
+          type: string
+          example: divi
+        role:
+          description: A given user's role.
+          type: string
+          example: admin
+    UserStub:
+      description: A bare-minimum user for account creation.
+      type: object
+      properties:
+        username:
+          description: The user's username
+          type: string
+          example: jdivincent
+        first_name:
+          description: The user's first name
+          type: string
+          example: Jeffrey
+        email:
+          description: The user's email.
+          type: string
+          example: divi@example.com
+        phone:
+          description: The user's phone number, stored as an integer.
+          type: integer
+          example: 4078242000
+    EditUser:
+      description: The user-editable sections of a user entry.
+      type: object
+      properties:
+        username:
+          description: The user's username
+          type: string
+          example: jdivincent
+        password:
+          description: The user's password, which will be hashed with bcrypt.
+          type: string
+          example: '**********'
+        first_name:
+          description: The user's first name
+          type: string
+          example: Jeffrey
+        last_name:
+          description: The user's surname.
+          type: string
+          example: DiVincent
+        email:
+          description: The user's email.
+          type: string
+          example: divi@example.com
+        phone:
+          description: The user's phone number, stored as an integer.
+          type: integer
+          example: 4078242000
+    User:
+      description: A complete single user entry.
+      allOf:
+        - required:
+            - user_id
+            - first_name
+            - username
+            - password
+            - role
+          type: object
+          properties:
+            user_id:
+              description: The user ID.
+              type: integer
+              example: 7
+            role:
+              description: The role of the account. Either admin, staff, or guest.
+              type: string
+              example: admin
+            checkin:
+              description: The currently active check-in date and time, stored in Unix time.
+              type: integer
+              example: 1625184007928
+            checkout:
+              description: The currently active check-out date and time, stored in Unix time.
+              type: integer
+              example: 1625184007929
+            room:
+              description: The currently active room number.
+              type: string
+              example: 345P
+        - $ref: '#/components/schemas/EditUser'
+    Hotel:
+      required:
+        - name
+        - bkgd
+        - desc
+        - terms
+      type: object
+      properties:
+        name:
+          description: The name of the hotel.
+          type: string
+          example: Disney's Hyperion Resort
+        color:
+          description: The hotel's color scheme.
+          type: string
+          example: '#ffc904'
+        bkgd:
+          description: A URL to an image.
+          type: string
+          example: https://i.divi.sh/bkgd.png
+        desc:
+          description: A long-form description of the hotel.
+          type: string
+          example: '# Hello, world!'
+    #        terms:
+    #          description: A summarized form of the hotel's rules.
+    #          type: array
+    #          items:
+    #            $ref: '#/components/schemas/Terms'
+    #          example:
+    #            - name: Don't break the law.
+    #              icon: fab fa-twitter
+    #              desc: Breaking the law is illegal. **So don't do it!**
+    #              url: https://o.divi.sh/terms/
+    #    Terms:
+    #      required:
+    #        - name
+    #        - desc
+    #      type: object
+    #      properties:
+    #        name:
+    #          type: string
+    #          description: A description of the term.
+    #          example: Don't break the law.
+    #        icon:
+    #          type: string
+    #          description: A Font Awesome string to render the icon with.
+    #          example: fab fa-twitter
+    #        desc:
+    #          type: string
+    #          description: A long-form description of the term.
+    #          example: Breaking the law is illegal. **So don't do it!**
+    #        url:
+    #          type: string
+    #          description: A URL to the un-summarized term, likely written by real lawyers.
+    #          example: https://o.divi.sh/terms/
+    Room:
+      required:
+        - room_id
+      type: object
+      properties:
+        room_id:
+          type: string
+          description: A unique string to identify the room.
+          example: 221B
+        occupant:
+          type: integer
+          description: The user ID of the current occupant. -1 if unoccupied.
+          example: 3
+        orders:
+          type: array
+          description: A list of active orders to the room.
+          items:
+            $ref: '#/components/schemas/Order'
+          example:
+            - order_id: 104
+              room_id: "221B"
+              staff: 3
+              item_id: 19
+              quantity: 1
+              guest: 7
+        floor:
+          type: integer
+          description: The floor the room is on.
+          example: 23
+    EditInventory:
+      required:
+        - item_id
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the item.
+          example: Extra Blankets
+        description:
+          type: string
+          description: A long-form description of the item.
+          example: "*Need more blankets?* We'll get you some!"
+        img:
+          type: string
+          description: A URL to an image of the item.
+          example: https://i.divi.sh/hotel_inv/blankets.png
+        quantity:
+          type: integer
+          description: How much of the item is in stock. -1 if infinite.
+          example: -1
+    Inventory:
+      allOf:
+        - required:
+            - item_id
+            - name
+            - quantity
+          properties:
+            item_id:
+              type: integer
+              description: A unique ID to itentify the item.
+              example: 19
+        - $ref: '#/components/schemas/EditInventory'
+    EditOrder:
+      required:
+        - item_id
+      type: object
+      properties:
+        item_id:
+          type: integer
+          description: The ID of the item ordered.
+          example: 19
+        quantity:
+          type: integer
+          description: The amount of an item ordered.
+          example: 1
+        guest:
+          type: integer
+          description: The user ID of the guest who ordered the item.
+          example: 7
+    Order:
+      allOf:
+        - required:
+            - order_id
+            - item_id
+            - quantity
+            - guest
+            - room_id
+            - staff
+          properties:
+            order_id:
+              type: integer
+              description: The ID of the order (task).
+              example: 104
+            room_id:
+              type: string
+              description: The room number to deliver the item to.
+              example: 221B
+            staff:
+              type: integer
+              description: The user ID of the employee to deliver the item. -1 if undefined.
+              example: 3
+        - $ref: '#/components/schemas/EditOrder'
+  securitySchemes:
+    Bearer:
+      scheme: bearer
+      type: http
+  headers: {}
+  responses: {}
+  parameters: {}
+security:
+  - Bearer: []
+tags:
+  - name: Account
+    description: User accounts and profiles.
+  - name: Admin
+    description: Global settings and inventories for the whole instance.
+  - name: Guest
+    description: Operations to be done primarily by guests.
+  - name: Staff
+    description: Operations to be done exclusively by staff.
